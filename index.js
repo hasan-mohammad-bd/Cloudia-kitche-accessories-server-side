@@ -32,7 +32,7 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res)=>{
-    console.log('running the manufacturer-app');
+    res.send('running the manufacturer-app');
 })
 
 app.listen(port, ()=> {
