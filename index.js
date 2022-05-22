@@ -17,6 +17,15 @@ console.log('mongodb connected');
 
 const run = async () => {
     try{
+        await client.connect();
+        const productCollection = client.db('tools-shop').collection('product');
+
+        app.post('/product', async (req, res)=>{
+            const product = req.body;
+            const result = await productCollection.insertOne(product);
+            res.send(result)
+        })
+
 
     }
     finally{
