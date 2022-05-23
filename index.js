@@ -26,6 +26,18 @@ function verifyJWT(req, res, next){
     })
 }
 
+const verifyAdmin = async (req, res, next) =>{
+    const email = req.params.email;
+    const requester = req.decoded.email;
+    const requesterAccount = await userCollection.findOne({email: requester});
+    if(requesterAccount.role === 'admin'){
+      next()
+    }
+    else{
+      res.status(403).send({message: 'forbidden'})
+    }
+  }
+
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.vpxj7.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
@@ -72,6 +84,39 @@ const run = async () => {
             const token = jwt.sign({email: email}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '3h'});
             res.send({result, token});
         })
+
+        app.get('/user', async(req, res) => {
+            const users = await userCollection.find().toArray();
+            res.send(users);
+        })
+
+        app.put('/user/admin/:email' ,verifyAdmin ,verifyJWT, async(req, res) =>{
+            const email = req.params.email;
+            const filter = {email: email};
+            const updateDoc = {
+              $set: {role: 'admin'}
+            };
+            const result = await userCollection.updateOne(filter, updateDoc);
+            res.send(result)
+          
+        })
+        app.put('/user/adminRemove/:email' ,verifyAdmin, verifyJWT, async(req, res) =>{
+            const email = req.params.email;
+            const filter = {email: email};
+            const updateDoc = {
+              $set: {role: 'null'}
+            };
+            const result = await userCollection.updateOne(filter, updateDoc);
+            res.send(result)
+          
+        })
+
+        app.get('/admin/:email', async(req, res)=>{
+            const email = req.params.email;
+            const user = await userCollection.findOne({email: email});
+            const isAdmin = user.role === 'admin';
+            res.send({admin: isAdmin})
+          })
 
 
 
