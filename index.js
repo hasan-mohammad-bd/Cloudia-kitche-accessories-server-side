@@ -38,6 +38,7 @@ const run = async () => {
         await client.connect();
         const productCollection = client.db('tools-shop').collection('product');
         const userCollection = client.db('tools-shop').collection('user');
+        const reviewCollection = client.db('tools-shop').collection('review');
 
         const verifyAdmin = async (req, res, next) =>{
             const requester = req.decoded.email;
@@ -57,6 +58,12 @@ const run = async () => {
             const product = req.body;
             const result = await productCollection.insertOne(product);
             res.send(result)
+        })
+        app.get('/product/:id', async (req, res)=>{
+            const id = req.params.id
+            const filter = {_id : ObjectId(id)}
+            const product = await productCollection.findOne(filter);
+            res.send(product)
         })
 
         app.get('/product', async (req, res)=> {
@@ -101,7 +108,7 @@ const run = async () => {
             const users = await userCollection.find().toArray();
             res.send(users);
         })
-        
+
         app.get('/user/:email', async(req, res) => {
             const email = req.params.email;
             const filter = {email : email}
@@ -136,6 +143,20 @@ const run = async () => {
             const isAdmin = user.role === 'admin';
             res.send({admin: isAdmin})
           })
+
+
+          //review
+
+          app.post('/review', async (req, res)=>{
+            const product = req.body;
+            const result = await reviewCollection.insertOne(product);
+            res.send(result)
+        })
+
+        app.get('/review', async (req, res)=> {
+            const review= await reviewCollection.find().toArray();
+            res.send(review);
+        })
 
 
 
