@@ -39,6 +39,7 @@ const run = async () => {
         const productCollection = client.db('tools-shop').collection('product');
         const userCollection = client.db('tools-shop').collection('user');
         const reviewCollection = client.db('tools-shop').collection('review');
+        const bookCollection = client.db('tools-shop').collection('book');
 
         const verifyAdmin = async (req, res, next) =>{
             const requester = req.decoded.email;
@@ -76,6 +77,17 @@ const run = async () => {
             const filter = {_id : ObjectId(id)}
             const result = await productCollection.deleteOne(filter)
             res.send(result);
+        })
+
+        app.put('/productQuantity/:id', async(req, res) =>{
+            const id = req.params.id
+            const filter = {_id: ObjectId(id)};
+            const updateDoc = {
+              $set: req.body
+            };
+            const result = await productCollection.updateOne(filter, updateDoc);
+            res.send(result)
+          
         })
 
         //user Database
@@ -156,6 +168,32 @@ const run = async () => {
         app.get('/review', async (req, res)=> {
             const review= await reviewCollection.find().toArray();
             res.send(review);
+        })
+
+        //booking
+        
+        app.post('/book', async (req, res)=>{
+            const book = req.body;
+            const result = await bookCollection.insertOne(book);
+            res.send(result)
+        })
+
+        app.get('/book/:email', async (req, res)=> {
+            const email = req.params.email;
+            const filter = {email : email}
+            const booking= await bookCollection.find(filter).toArray();
+            res.send(booking);
+        })
+
+        app.delete('/book/:id', async (req, res) => {
+            const id = req.params.id
+            const filter = {_id : ObjectId(id)}
+            const result = await bookCollection.deleteOne(filter)
+            res.send(result);
+        })
+        app.get('/book', async (req, res) => {
+            const books = await bookCollection.find().toArray()
+            res.send(books);
         })
 
 
