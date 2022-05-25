@@ -5,6 +5,7 @@ require('dotenv').config();
 var jwt = require('jsonwebtoken');
 const port = process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 
 //middleware 
 app.use(cors());
@@ -40,6 +41,7 @@ const run = async () => {
         const userCollection = client.db('tools-shop').collection('user');
         const reviewCollection = client.db('tools-shop').collection('review');
         const bookCollection = client.db('tools-shop').collection('book');
+        const paymentCollection = client.db('tools-shop').collection('payments');
 
         const verifyAdmin = async (req, res, next) =>{
             const requester = req.decoded.email;
@@ -51,6 +53,21 @@ const run = async () => {
               res.status(403).send({message: 'forbidden'})
             }
           }
+
+
+        
+          app.post('/create-payment-intent', verifyJWT, async(req, res) =>{
+            const service = req.body;
+            console.log(service);
+            const price = service.totalPrice;
+            const amount = price * 100;
+            const paymentIntent = await stripe.paymentIntents.create({
+              amount : amount,
+              currency: 'usd',
+              payment_method_types:['card']
+            });
+            res.send({clientSecret: paymentIntent.client_secret})
+          });
 
 
         //product Database
@@ -194,6 +211,42 @@ const run = async () => {
         app.get('/book', async (req, res) => {
             const books = await bookCollection.find().toArray()
             res.send(books);
+        })
+
+        app.get('/booking/:id',verifyJWT, async(req, res) =>{
+            const id = req.params.id;
+            const query = {_id : ObjectId(id)};
+            const booking = await bookCollection.findOne(query);
+            res.send(booking);
+        })
+
+
+        app.patch('/booking/:id', verifyJWT, async(req, res) =>{
+            const id  = req.params.id;
+            const payment = req.body;
+            const filter = {_id: ObjectId(id)};
+            const updatedDoc = {
+              $set: {
+                paid: true,
+                transactionId: payment.transactionId
+              }
+            }
+      
+            const result = await paymentCollection.insertOne(payment);
+            const updatedBooking = await bookCollection.updateOne(filter, updatedDoc);
+            res.send(updatedBooking);
+          })
+
+          app.patch('/status/:id' , async(req, res) =>{
+            const update = req.body;
+            const id = req.params.id;
+            console.log(id);
+            const filter = {_id : ObjectId(id)};
+            const updateDoc = {
+              $set: update
+            };
+            const result = await bookCollection.updateOne(filter, updateDoc);
+            res.send(result)
         })
 
 
