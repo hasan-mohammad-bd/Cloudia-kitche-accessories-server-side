@@ -72,12 +72,12 @@ const run = async () => {
 
         //product Database
 
-        app.post('/product', async (req, res)=>{
+        app.post('/product',verifyJWT,verifyAdmin, async (req, res)=>{
             const product = req.body;
             const result = await productCollection.insertOne(product);
             res.send(result)
         })
-        app.get('/product/:id', async (req, res)=>{
+        app.get('/product/:id',verifyJWT, async (req, res)=>{
             const id = req.params.id
             const filter = {_id : ObjectId(id)}
             const product = await productCollection.findOne(filter);
@@ -89,14 +89,14 @@ const run = async () => {
             res.send(product);
         })
 
-        app.delete('/product/:id', async (req, res) => {
+        app.delete('/product/:id',verifyJWT, async (req, res) => {
             const id = req.params.id
             const filter = {_id : ObjectId(id)}
             const result = await productCollection.deleteOne(filter)
             res.send(result);
         })
 
-        app.put('/productQuantity/:id', async(req, res) =>{
+        app.put('/productQuantity/:id',verifyJWT, async(req, res) =>{
             const id = req.params.id
             const filter = {_id: ObjectId(id)};
             const updateDoc = {
@@ -121,7 +121,7 @@ const run = async () => {
             const token = jwt.sign({email: email}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '3h'});
             res.send({result, token});
         })
-        app.put('/profile/:email', async (req, res) => {
+        app.put('/profile/:email',verifyJWT, async (req, res) => {
             const email = req.params.email;
             const profile = req.body;
             const filter = {email: email}
@@ -133,12 +133,12 @@ const run = async () => {
             res.send(result);
         })
 
-        app.get('/user', async(req, res) => {
+        app.get('/user',verifyJWT,verifyAdmin, async(req, res) => {
             const users = await userCollection.find().toArray();
             res.send(users);
         })
 
-        app.get('/user/:email', async(req, res) => {
+        app.get('/user/:email',verifyJWT, async(req, res) => {
             const email = req.params.email;
             const filter = {email : email}
             const user = await userCollection.findOne(filter);
@@ -176,7 +176,7 @@ const run = async () => {
 
           //review
 
-          app.post('/review', async (req, res)=>{
+          app.post('/review',verifyJWT, async (req, res)=>{
             const product = req.body;
             const result = await reviewCollection.insertOne(product);
             res.send(result)
@@ -189,26 +189,26 @@ const run = async () => {
 
         //booking
         
-        app.post('/book', async (req, res)=>{
+        app.post('/book',verifyJWT, async (req, res)=>{
             const book = req.body;
             const result = await bookCollection.insertOne(book);
             res.send(result)
         })
 
-        app.get('/book/:email', async (req, res)=> {
+        app.get('/book/:email',verifyJWT, async (req, res)=> {
             const email = req.params.email;
             const filter = {email : email}
             const booking= await bookCollection.find(filter).toArray();
             res.send(booking);
         })
 
-        app.delete('/book/:id', async (req, res) => {
+        app.delete('/book/:id',verifyJWT,verifyAdmin, async (req, res) => {
             const id = req.params.id
             const filter = {_id : ObjectId(id)}
             const result = await bookCollection.deleteOne(filter)
             res.send(result);
         })
-        app.get('/book', async (req, res) => {
+        app.get('/book',verifyJWT,verifyAdmin, async (req, res) => {
             const books = await bookCollection.find().toArray()
             res.send(books);
         })
@@ -237,7 +237,7 @@ const run = async () => {
             res.send(updatedBooking);
           })
 
-          app.patch('/status/:id' , async(req, res) =>{
+          app.patch('/status/:id' ,verifyJWT,verifyAdmin, async(req, res) =>{
             const update = req.body;
             const id = req.params.id;
             console.log(id);
