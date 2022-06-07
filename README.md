@@ -2,17 +2,32 @@
 
 Live Site Link [Cloudia](https://manufacturer-app-dff29.web.app/).
 
-## Description
-
-I worked on this kitchen tools, where I am making kitchen tools product . all feature is welled made. The UI is very attractive in my point of view. There are social login along with simple login. and lot of feature has been added to get better user experience.
 
 ## About this project.
 
-- Css framework tailwind has been used in this project.
-- Firebase authentication has been used.
-- For icon, React icon has been used.
-- React router is used for loading free navigation.
-- React router is used for loading free navigation.
-- Server site has been hosted in heroku.com .
-- client site has been hosted in netlify.com .
-- jwt has been used 
+- The site is fully responsive.
+- Stunning UI design.
+- Users can book, purchase products with payment, Able
+to update their profile & leave a review.
+- Admin can add & delete a product, manage customer
+booking, and appoint another user as an admin.
+- Admin access: user1@gmail.com | password:123456
+
+
+
+## Technology Used.
+
+- React 
+- React Router
+- React Testify 
+- React Icon 
+- Tailwind CSS
+- Firebase Authentication
+- Node Js
+- MongoDB
+- Express Js
+- Stripe payment getaway
+- JWT Token 
+- DaisyUI
+- React Query
+- React Hook Form
