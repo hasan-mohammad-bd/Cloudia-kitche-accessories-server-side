@@ -94,7 +94,7 @@ const run = async () => {
         })
 
         app.get('/product', async (req, res)=> {
-            const product= await projectCollection.find().toArray();
+            const product= await productCollection.find().toArray();
             res.send(product);
         })
 
