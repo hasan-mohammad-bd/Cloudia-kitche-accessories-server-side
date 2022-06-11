@@ -42,6 +42,7 @@ const run = async () => {
         const reviewCollection = client.db('tools-shop').collection('review');
         const bookCollection = client.db('tools-shop').collection('book');
         const paymentCollection = client.db('tools-shop').collection('payments');
+        const projectCollection = client.db('tools-shop').collection('project');
 
         const verifyAdmin = async (req, res, next) =>{
             const requester = req.decoded.email;
@@ -84,8 +85,22 @@ const run = async () => {
             res.send(product)
         })
 
+        //portfolio api
+        app.get('/project/:id', async (req, res)=>{
+            const id = req.params.id
+            const filter = {_id : ObjectId(id)}
+            const project = await projectCollection.findOne(filter);
+            res.send(project)
+        })
+
         app.get('/product', async (req, res)=> {
-            const product= await productCollection.find().toArray();
+            const product= await projectCollection.find().toArray();
+            res.send(product);
+        })
+
+        //portfolio api
+        app.get('/project', async (req, res)=> {
+            const product= await projectCollection.find().toArray();
             res.send(product);
         })
 
